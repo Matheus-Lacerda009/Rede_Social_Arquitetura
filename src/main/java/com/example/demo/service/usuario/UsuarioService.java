@@ -5,6 +5,7 @@ import com.example.demo.dto.usuario.UsuarioLoginDTO;
 import com.example.demo.dto.usuario.UsuarioResponseDTO;
 
 import com.example.demo.mapper.usuario.UsuarioMapper;
+import com.example.demo.model.usuario.PerfilUsuario;
 import com.example.demo.model.usuario.Usuario;
 import com.example.demo.repository.usuario.UsuarioRepositoryInterface;
 
@@ -27,11 +28,13 @@ public class UsuarioService {
     public UsuarioService(
             UsuarioRepositoryInterface usuarioRepository,
             UsuarioMapper usuarioMapper,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            PerfilUsuarioRepositoryInterface perfilUsuarioRepository
     ) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioMapper = usuarioMapper;
         this.passwordEncoder = passwordEncoder;
+        this.perfilUsuarioRepository = perfilUsuarioRepository;
     }
 
     @Transactional

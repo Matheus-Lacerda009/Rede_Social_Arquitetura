@@ -3,6 +3,8 @@ package com.example.demo.model.usuario;
 import jakarta.persistence.*;
 import lombok.*;
 
+import com.example.demo.enums.usuario.StatusUsuario;
+
 import java.time.LocalDateTime;
 
 @Entity
