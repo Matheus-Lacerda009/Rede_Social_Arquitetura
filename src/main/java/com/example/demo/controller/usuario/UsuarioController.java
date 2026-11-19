@@ -5,6 +5,7 @@ import com.example.demo.dto.usuario.UsuarioCadastroDTO;
 import com.example.demo.dto.usuario.UsuarioLoginDTO;
 import com.example.demo.dto.usuario.UsuarioResponseDTO;
 import com.example.demo.service.usuario.UsuarioService;
+import jakarta.validation.Valid;
 import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class UsuarioController {
 
     @PostMapping
     public ResponseEntity<@NonNull UsuarioResponseDTO> cadastrar(
-            @RequestBody UsuarioCadastroDTO dto
+            @Valid @RequestBody UsuarioCadastroDTO dto
     ) {
         UsuarioResponseDTO usuario = usuarioService.cadastrar(dto);
 
@@ -33,7 +34,7 @@ public class UsuarioController {
 
     @PostMapping("/login")
     public ResponseEntity<@NonNull UsuarioResponseDTO> login(
-            @RequestBody UsuarioLoginDTO dto
+            @Valid @RequestBody UsuarioLoginDTO dto
     ) {
         UsuarioResponseDTO usuario = usuarioService.login(dto);
 

@@ -4,6 +4,7 @@ package com.example.demo.controller.usuario;
 import com.example.demo.dto.usuario.PerfilAtualizacaoDTO;
 import com.example.demo.dto.usuario.PerfilUsuarioDTO;
 import com.example.demo.service.usuario.PerfilUsuarioService;
+import jakarta.validation.Valid;
 import lombok.NonNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class PerfilUsuarioController {
     @PutMapping
     public ResponseEntity<@NonNull PerfilUsuarioDTO> atualizar(
             @PathVariable Long usuarioId,
-            @RequestBody PerfilAtualizacaoDTO dto
+            @Valid @RequestBody PerfilAtualizacaoDTO dto
     ) {
         PerfilUsuarioDTO perfil =
                 perfilUsuarioService.atualizar(usuarioId, dto);
