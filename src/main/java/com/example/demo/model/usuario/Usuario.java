@@ -41,6 +41,9 @@ public class Usuario {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime atualizadoEm;
 
+    @OneToOne(mappedBy = "usuario", fetch = FetchType.LAZY)
+    private PerfilUsuario perfilUsuario;
+
     @PrePersist
     protected void aoCriar() {
         LocalDateTime agora = LocalDateTime.now();

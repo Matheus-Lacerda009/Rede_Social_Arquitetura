@@ -10,10 +10,14 @@ import com.example.demo.model.usuario.Usuario;
 import com.example.demo.repository.usuario.UsuarioRepositoryInterface;
 
 import com.example.demo.common.exception.RegraNegocioException;
+import com.example.demo.common.exception.RecursoNaoEncontradoException;
+import com.example.demo.enums.usuario.StatusUsuario;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 import com.example.demo.repository.usuario.PerfilUsuarioRepositoryInterface;
 
@@ -56,13 +60,15 @@ public class UsuarioService {
 
         PerfilUsuario perfil = new PerfilUsuario();
         perfil.setUsuario(usuario);
+        perfil.setNomeExibicao(usuario.getUsername());
 
+        usuario.setPerfilUsuario(perfil);
         perfilUsuarioRepository.save(perfil);
 
         return usuarioMapper.paraResponseDTO(usuario);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public UsuarioResponseDTO login(UsuarioLoginDTO dto) {
 
         Usuario usuario = usuarioRepository
@@ -76,6 +82,13 @@ public class UsuarioService {
             throw new RegraNegocioException("Credenciais inválidas.");
         }
 
+        if (usuario.getStatus() != StatusUsuario.ACTIVE) {
+            throw new RegraNegocioException("Esta conta não está ativa.");
+        }
+
+        usuario.setUltimoLogin(LocalDateTime.now());
+        usuarioRepository.save(usuario);
+
         return usuarioMapper.paraResponseDTO(usuario);
     }
 
@@ -84,7 +97,7 @@ public class UsuarioService {
 
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() ->
-                        new RegraNegocioException("Usuário não encontrado.")
+                        new RecursoNaoEncontradoException("Usuário não encontrado.")
                 );
 
         return usuarioMapper.paraResponseDTO(usuario);

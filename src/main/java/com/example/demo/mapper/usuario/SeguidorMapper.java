@@ -18,14 +18,14 @@ public class SeguidorMapper {
     public UsuarioResumoDTO paraSeguidorDTO(Seguidor seguidor) {
         return usuarioMapper.paraResumoDTO(
                 seguidor.getSeguidor(),
-                null
+                seguidor.getSeguidor().getPerfilUsuario()
         );
     }
 
     public UsuarioResumoDTO paraSeguidoDTO(Seguidor seguidor) {
         return usuarioMapper.paraResumoDTO(
                 seguidor.getSeguido(),
-                null
+                seguidor.getSeguido().getPerfilUsuario()
         );
     }
 }

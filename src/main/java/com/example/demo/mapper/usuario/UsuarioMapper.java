@@ -37,7 +37,9 @@ public class UsuarioMapper {
         return new UsuarioResumoDTO(
                 usuario.getId(),
                 usuario.getUsername(),
-                perfil != null ? perfil.getNomeExibicao() : null,
+                perfil != null && perfil.getNomeExibicao() != null
+                        ? perfil.getNomeExibicao()
+                        : usuario.getUsername(),
                 perfil != null ? perfil.getFotoPerfil() : null
         );
     }

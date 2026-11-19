@@ -12,6 +12,7 @@ public record UsuarioCadastroDTO(
 
         @NotBlank
         @Email
+        @Size(max = 254)
         String email,
 
         @NotBlank

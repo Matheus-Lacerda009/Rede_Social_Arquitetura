@@ -20,12 +20,12 @@ public class PerfilUsuario {
     @JoinColumn(name = "user_id")
     private Usuario usuario;
 
-    @Column(name = "display_name", length = 50)
+    @Column(name = "display_name", nullable = false, length = 50)
     private String nomeExibicao;
 
     @Column(length = 500)
     private String bio;
 
-    @Column(name = "avatar_url")
+    @Column(name = "avatar_url", length = 2048)
     private String fotoPerfil;
 }

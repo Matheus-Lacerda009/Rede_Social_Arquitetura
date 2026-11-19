@@ -24,8 +24,16 @@ public class PerfilUsuarioMapper {
             PerfilAtualizacaoDTO dto,
             PerfilUsuario perfil
     ) {
-        perfil.setNomeExibicao(dto.nomeExibicao());
-        perfil.setBio(dto.bio());
-        perfil.setFotoPerfil(dto.fotoPerfil());
+        if (dto.nomeExibicao() != null) {
+            perfil.setNomeExibicao(dto.nomeExibicao());
+        }
+
+        if (dto.bio() != null) {
+            perfil.setBio(dto.bio());
+        }
+
+        if (dto.fotoPerfil() != null) {
+            perfil.setFotoPerfil(dto.fotoPerfil());
+        }
     }
 }

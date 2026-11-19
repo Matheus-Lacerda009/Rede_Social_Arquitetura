@@ -7,7 +7,7 @@ public record PerfilAtualizacaoDTO(
         @Size(max = 50)
         String nomeExibicao,
 
-        @Size(max = 160)
+        @Size(max = 500)
         String bio,
 
         @Size(max = 2048)

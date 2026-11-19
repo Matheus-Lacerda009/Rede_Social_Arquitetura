@@ -5,7 +5,7 @@ import com.example.demo.dto.usuario.PerfilAtualizacaoDTO;
 import com.example.demo.dto.usuario.PerfilUsuarioDTO;
 import com.example.demo.service.usuario.PerfilUsuarioService;
 import jakarta.validation.Valid;
-import lombok.NonNull;
+import org.jspecify.annotations.NonNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

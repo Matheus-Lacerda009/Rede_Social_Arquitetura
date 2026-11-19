@@ -6,7 +6,7 @@ import com.example.demo.dto.usuario.UsuarioLoginDTO;
 import com.example.demo.dto.usuario.UsuarioResponseDTO;
 import com.example.demo.service.usuario.UsuarioService;
 import jakarta.validation.Valid;
-import lombok.NonNull;
+import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
