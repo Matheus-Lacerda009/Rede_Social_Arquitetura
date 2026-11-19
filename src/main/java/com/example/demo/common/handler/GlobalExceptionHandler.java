@@ -9,6 +9,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.jspecify.annotations.NonNull;
 
+import org.springframework.web.bind.MethodArgumentNotValidException;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -38,4 +43,22 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Ocorreu um erro interno no servidor.");
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<@NonNull Map<String, String>> tratarErrosValidacao(
+            MethodArgumentNotValidException exception
+    ) {
+        Map<String, String> erros = new LinkedHashMap<>();
+
+        exception.getBindingResult().getFieldErrors().forEach(erro -> {
+            String mensagem = erro.getDefaultMessage() != null
+                    ? erro.getDefaultMessage()
+                    : "Valor inválido.";
+
+            erros.put(erro.getField(), mensagem);
+        });
+
+        return ResponseEntity.badRequest().body(erros);
+    }
+
 }
