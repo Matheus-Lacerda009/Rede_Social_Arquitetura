@@ -14,12 +14,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.demo.repository.usuario.PerfilUsuarioRepositoryInterface;
+
 @Service
 public class UsuarioService {
 
     private final UsuarioRepositoryInterface usuarioRepository;
     private final UsuarioMapper usuarioMapper;
     private final PasswordEncoder passwordEncoder;
+    private final PerfilUsuarioRepositoryInterface perfilUsuarioRepository;
 
     public UsuarioService(
             UsuarioRepositoryInterface usuarioRepository,
@@ -46,9 +49,14 @@ public class UsuarioService {
 
         usuario.setSenha(passwordEncoder.encode(dto.senha()));
 
-        Usuario usuarioSalvo = usuarioRepository.save(usuario);
+        usuario = usuarioRepository.save(usuario);
 
-        return usuarioMapper.paraResponseDTO(usuarioSalvo);
+        PerfilUsuario perfil = new PerfilUsuario();
+        perfil.setUsuario(usuario);
+
+        perfilUsuarioRepository.save(perfil);
+
+        return usuarioMapper.paraResponseDTO(usuario);
     }
 
     @Transactional(readOnly = true)
