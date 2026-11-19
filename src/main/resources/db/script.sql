@@ -10,7 +10,7 @@ USE rede_social;
 -- =============================================
 
 CREATE TABLE users (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
 
     username VARCHAR(30) NOT NULL UNIQUE,
     email VARCHAR(254) NOT NULL UNIQUE,
@@ -34,9 +34,9 @@ CREATE TABLE users (
 -- =============================================
 
 CREATE TABLE user_profiles (
-    user_id BIGINT UNSIGNED PRIMARY KEY,
+    user_id BIGINT PRIMARY KEY,
 
-    display_name VARCHAR(60) NOT NULL,
+    display_name VARCHAR(50) NOT NULL,
     bio VARCHAR(500),
     avatar_url VARCHAR(2048),
 
@@ -51,8 +51,8 @@ CREATE TABLE user_profiles (
 -- =============================================
 
 CREATE TABLE user_follows (
-    follower_id BIGINT UNSIGNED NOT NULL,
-    followed_id BIGINT UNSIGNED NOT NULL,
+    follower_id BIGINT NOT NULL,
+    followed_id BIGINT NOT NULL,
 
     created_at TIMESTAMP(6)
         NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
@@ -80,9 +80,9 @@ CREATE TABLE user_follows (
 -- =============================================
 
 CREATE TABLE videos (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
 
-    user_id BIGINT UNSIGNED NOT NULL,
+    user_id BIGINT NOT NULL,
 
     title VARCHAR(150) NOT NULL,
     description TEXT,
@@ -120,8 +120,8 @@ CREATE TABLE videos (
 -- =============================================
 
 CREATE TABLE video_likes (
-    user_id BIGINT UNSIGNED NOT NULL,
-    video_id BIGINT UNSIGNED NOT NULL,
+    user_id BIGINT NOT NULL,
+    video_id BIGINT NOT NULL,
 
     created_at TIMESTAMP(6)
         NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
@@ -146,12 +146,12 @@ CREATE TABLE video_likes (
 -- =============================================
 
 CREATE TABLE video_comments (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
 
-    video_id BIGINT UNSIGNED NOT NULL,
-    user_id BIGINT UNSIGNED NOT NULL,
+    video_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
 
-    parent_comment_id BIGINT UNSIGNED,
+    parent_comment_id BIGINT,
 
     content TEXT NOT NULL,
 
@@ -187,9 +187,9 @@ CREATE TABLE video_comments (
 -- =============================================
 
 CREATE TABLE conversations (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
 
-    created_by BIGINT UNSIGNED NOT NULL,
+    created_by BIGINT NOT NULL,
 
     type ENUM('DIRECT', 'GROUP')
         NOT NULL DEFAULT 'DIRECT',
@@ -216,8 +216,8 @@ CREATE TABLE conversations (
 -- =============================================
 
 CREATE TABLE conversation_participants (
-    conversation_id BIGINT UNSIGNED NOT NULL,
-    user_id BIGINT UNSIGNED NOT NULL,
+    conversation_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
 
     role ENUM('MEMBER', 'ADMIN')
         NOT NULL DEFAULT 'MEMBER',
@@ -245,10 +245,10 @@ CREATE TABLE conversation_participants (
 -- =============================================
 
 CREATE TABLE messages (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
 
-    conversation_id BIGINT UNSIGNED NOT NULL,
-    sender_id BIGINT UNSIGNED,
+    conversation_id BIGINT NOT NULL,
+    sender_id BIGINT,
 
     content TEXT,
 
@@ -258,7 +258,7 @@ CREATE TABLE messages (
     media_url VARCHAR(2048),
     media_mime_type VARCHAR(100),
 
-    reply_to_message_id BIGINT UNSIGNED,
+    reply_to_message_id BIGINT,
 
     edited_at DATETIME(6),
     deleted_at DATETIME(6),
@@ -291,8 +291,8 @@ CREATE TABLE messages (
 -- =============================================
 
 CREATE TABLE message_reads (
-    message_id BIGINT UNSIGNED NOT NULL,
-    user_id BIGINT UNSIGNED NOT NULL,
+    message_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
 
     read_at TIMESTAMP(6)
         NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
