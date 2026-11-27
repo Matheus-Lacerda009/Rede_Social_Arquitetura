@@ -16,4 +16,6 @@ public class VideoCriacaoDTO {
     private String url;
 
     private VisibilidadeVideo visibilidade;
+
+    private Long usuarioId;
 }

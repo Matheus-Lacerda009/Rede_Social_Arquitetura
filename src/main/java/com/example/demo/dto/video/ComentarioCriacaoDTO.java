@@ -11,4 +11,6 @@ public class ComentarioCriacaoDTO {
     private String texto;
 
     private Long videoId;
+
+    private Long usuarioId;
 }

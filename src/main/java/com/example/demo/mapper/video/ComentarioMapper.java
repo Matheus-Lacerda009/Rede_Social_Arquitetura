@@ -10,7 +10,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class ComentarioMapper {
 
-    public Comentario toEntity(ComentarioCriacaoDTO dto, Video video) {
+    public Comentario toEntity(
+            ComentarioCriacaoDTO dto,
+            Video video
+    ) {
         Comentario comentario = new Comentario();
 
         comentario.setTexto(dto.getTexto());
@@ -30,8 +33,9 @@ public class ComentarioMapper {
             dto.setVideoId(comentario.getVideo().getId());
         }
 
-        // Será preenchido quando ligarmos Comentario ao Usuario.
-        dto.setUsuarioId(null);
+        if (comentario.getUsuario() != null) {
+            dto.setUsuarioId(comentario.getUsuario().getId());
+        }
 
         return dto;
     }

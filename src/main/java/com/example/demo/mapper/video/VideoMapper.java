@@ -1,5 +1,6 @@
 package com.example.demo.mapper.video;
 
+import com.example.demo.dto.video.VideoAtualizacaoDTO;
 import com.example.demo.dto.video.VideoCriacaoDTO;
 import com.example.demo.dto.video.VideoResponseDTO;
 import com.example.demo.model.video.Video;
@@ -30,13 +31,17 @@ public class VideoMapper {
         dto.setStatus(video.getStatus());
         dto.setVisibilidade(video.getVisibilidade());
 
-        // Por enquanto o Usuario ainda não está relacionado ao Video.
-        dto.setUsuarioId(null);
+        if (video.getUsuario() != null) {
+            dto.setUsuarioId(video.getUsuario().getId());
+        }
 
         return dto;
     }
 
-    public void updateEntity(Video video, com.example.demo.dto.video.VideoAtualizacaoDTO dto) {
+    public void updateEntity(
+            Video video,
+            VideoAtualizacaoDTO dto
+    ) {
         video.setTitulo(dto.getTitulo());
         video.setDescricao(dto.getDescricao());
         video.setUrl(dto.getUrl());

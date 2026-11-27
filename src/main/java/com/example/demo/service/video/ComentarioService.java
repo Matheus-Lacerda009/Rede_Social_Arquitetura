@@ -5,8 +5,10 @@ import com.example.demo.dto.video.ComentarioAtualizacaoDTO;
 import com.example.demo.dto.video.ComentarioCriacaoDTO;
 import com.example.demo.dto.video.ComentarioResponseDTO;
 import com.example.demo.mapper.video.ComentarioMapper;
+import com.example.demo.model.usuario.Usuario;
 import com.example.demo.model.video.Comentario;
 import com.example.demo.model.video.Video;
+import com.example.demo.repository.usuario.UsuarioRepositoryInterface;
 import com.example.demo.repository.video.ComentarioRepositoryInterface;
 import com.example.demo.repository.video.VideoRepositoryInterface;
 import org.springframework.stereotype.Service;
@@ -19,15 +21,18 @@ public class ComentarioService {
 
     private final ComentarioRepositoryInterface comentarioRepository;
     private final VideoRepositoryInterface videoRepository;
+    private final UsuarioRepositoryInterface usuarioRepository;
     private final ComentarioMapper comentarioMapper;
 
     public ComentarioService(
             ComentarioRepositoryInterface comentarioRepository,
             VideoRepositoryInterface videoRepository,
+            UsuarioRepositoryInterface usuarioRepository,
             ComentarioMapper comentarioMapper
     ) {
         this.comentarioRepository = comentarioRepository;
         this.videoRepository = videoRepository;
+        this.usuarioRepository = usuarioRepository;
         this.comentarioMapper = comentarioMapper;
     }
 
@@ -35,11 +40,20 @@ public class ComentarioService {
 
         Video video = buscarVideo(dto.getVideoId());
 
+        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
+                .orElseThrow(() ->
+                        new RecursoNaoEncontradoException(
+                                "Usuário não encontrado"
+                        )
+                );
+
         Comentario comentario = comentarioMapper.toEntity(dto, video);
 
+        comentario.setUsuario(usuario);
         comentario.setDataComentario(LocalDateTime.now());
 
-        Comentario comentarioSalvo = comentarioRepository.save(comentario);
+        Comentario comentarioSalvo =
+                comentarioRepository.save(comentario);
 
         return comentarioMapper.toResponseDTO(comentarioSalvo);
     }
