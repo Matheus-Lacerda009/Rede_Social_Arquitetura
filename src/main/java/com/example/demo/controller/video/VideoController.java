@@ -46,7 +46,9 @@ public class VideoController {
             @PathVariable Long id,
             @RequestBody VideoAtualizacaoDTO dto
     ) {
-        return ResponseEntity.ok(videoService.atualizar(id, dto));
+        return ResponseEntity.ok(
+                videoService.atualizar(id, dto)
+        );
     }
 
     @DeleteMapping("/{id}")

@@ -4,6 +4,8 @@ import com.example.demo.model.usuario.Usuario;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "curtidas_video")
 @Getter
@@ -24,4 +26,6 @@ public class CurtidaVideo {
     @MapsId("videoId")
     @JoinColumn(name = "video_id", nullable = false)
     private Video video;
+
+    private LocalDateTime dataCurtida;
 }
