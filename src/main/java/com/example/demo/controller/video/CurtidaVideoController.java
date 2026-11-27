@@ -20,8 +20,7 @@ public class CurtidaVideoController {
             @PathVariable Long usuarioId
     ) {
         curtidaVideoService.curtir(usuarioId, videoId);
-
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{videoId}/curtidas/{usuarioId}")
@@ -30,7 +29,6 @@ public class CurtidaVideoController {
             @PathVariable Long usuarioId
     ) {
         curtidaVideoService.descurtir(usuarioId, videoId);
-
         return ResponseEntity.noContent().build();
     }
 }

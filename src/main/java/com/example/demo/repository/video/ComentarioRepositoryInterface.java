@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ComentarioRepositoryInterface extends JpaRepository<Comentario, Long> {
 
-    List<Comentario> findByVideoId(Long videoId);
+    List<Comentario> findByVideo_IdOrderByDataComentarioAsc(Long videoId);
 }

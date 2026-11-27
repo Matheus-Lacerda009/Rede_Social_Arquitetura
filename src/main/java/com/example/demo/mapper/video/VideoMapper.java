@@ -38,13 +38,21 @@ public class VideoMapper {
         return dto;
     }
 
-    public void updateEntity(
-            Video video,
-            VideoAtualizacaoDTO dto
-    ) {
-        video.setTitulo(dto.getTitulo());
-        video.setDescricao(dto.getDescricao());
-        video.setUrl(dto.getUrl());
-        video.setVisibilidade(dto.getVisibilidade());
+    public void updateEntity(Video video, VideoAtualizacaoDTO dto) {
+        if (dto.getTitulo() != null) {
+            video.setTitulo(dto.getTitulo());
+        }
+
+        if (dto.getDescricao() != null) {
+            video.setDescricao(dto.getDescricao());
+        }
+
+        if (dto.getUrl() != null) {
+            video.setUrl(dto.getUrl());
+        }
+
+        if (dto.getVisibilidade() != null) {
+            video.setVisibilidade(dto.getVisibilidade());
+        }
     }
 }

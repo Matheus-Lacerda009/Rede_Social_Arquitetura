@@ -4,6 +4,8 @@ import com.example.demo.dto.video.VideoAtualizacaoDTO;
 import com.example.demo.dto.video.VideoCriacaoDTO;
 import com.example.demo.dto.video.VideoResponseDTO;
 import com.example.demo.service.video.VideoService;
+import jakarta.validation.Valid;
+import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +23,8 @@ public class VideoController {
     }
 
     @PostMapping
-    public ResponseEntity<VideoResponseDTO> criar(
-            @RequestBody VideoCriacaoDTO dto
+    public ResponseEntity<@NonNull VideoResponseDTO> criar(
+            @Valid @RequestBody VideoCriacaoDTO dto
     ) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -30,33 +32,28 @@ public class VideoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<VideoResponseDTO>> listarTodos() {
+    public ResponseEntity<@NonNull List<VideoResponseDTO>> listarTodos() {
         return ResponseEntity.ok(videoService.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<VideoResponseDTO> buscarPorId(
+    public ResponseEntity<@NonNull VideoResponseDTO> buscarPorId(
             @PathVariable Long id
     ) {
         return ResponseEntity.ok(videoService.buscarPorId(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<VideoResponseDTO> atualizar(
+    public ResponseEntity<@NonNull VideoResponseDTO> atualizar(
             @PathVariable Long id,
-            @RequestBody VideoAtualizacaoDTO dto
+            @Valid @RequestBody VideoAtualizacaoDTO dto
     ) {
-        return ResponseEntity.ok(
-                videoService.atualizar(id, dto)
-        );
+        return ResponseEntity.ok(videoService.atualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluir(
-            @PathVariable Long id
-    ) {
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
         videoService.excluir(id);
-
         return ResponseEntity.noContent().build();
     }
 }

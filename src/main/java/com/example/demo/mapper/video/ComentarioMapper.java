@@ -10,15 +10,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class ComentarioMapper {
 
-    public Comentario toEntity(
-            ComentarioCriacaoDTO dto,
-            Video video
-    ) {
+    public Comentario toEntity(ComentarioCriacaoDTO dto, Video video) {
         Comentario comentario = new Comentario();
-
         comentario.setTexto(dto.getTexto());
         comentario.setVideo(video);
-
         return comentario;
     }
 
@@ -40,10 +35,9 @@ public class ComentarioMapper {
         return dto;
     }
 
-    public void updateEntity(
-            Comentario comentario,
-            ComentarioAtualizacaoDTO dto
-    ) {
-        comentario.setTexto(dto.getTexto());
+    public void updateEntity(Comentario comentario, ComentarioAtualizacaoDTO dto) {
+        if (dto.getTexto() != null) {
+            comentario.setTexto(dto.getTexto());
+        }
     }
 }
