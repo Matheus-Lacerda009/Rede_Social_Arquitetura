@@ -1,5 +1,6 @@
 package com.example.demo.model.video;
 
+import com.example.demo.model.usuario.Usuario;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,4 +25,8 @@ public class Comentario {
     @ManyToOne
     @JoinColumn(name = "video_id", nullable = false)
     private Video video;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
 }

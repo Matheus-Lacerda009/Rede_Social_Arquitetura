@@ -1,9 +1,8 @@
 package com.example.demo.model.video;
 
+import com.example.demo.model.usuario.Usuario;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "curtidas_video")
@@ -16,7 +15,10 @@ public class CurtidaVideo {
     @EmbeddedId
     private CurtidaVideoId id;
 
-    private LocalDateTime dataCurtida;
+    @ManyToOne
+    @MapsId("usuarioId")
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
 
     @ManyToOne
     @MapsId("videoId")
