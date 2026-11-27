@@ -1,0 +1,31 @@
+package com.example.demo.model.usuario;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Table(name = "user_profiles")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class PerfilUsuario {
+
+    @Id
+    @Column(name = "user_id")
+    private Long usuarioId;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @MapsId
+    @JoinColumn(name = "user_id")
+    private Usuario usuario;
+
+    @Column(name = "display_name", nullable = false, length = 50)
+    private String nomeExibicao;
+
+    @Column(length = 500)
+    private String bio;
+
+    @Column(name = "avatar_url", length = 2048)
+    private String fotoPerfil;
+}
