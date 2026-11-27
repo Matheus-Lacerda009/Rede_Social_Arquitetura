@@ -1,0 +1,58 @@
+### Requisições de teste para o IntelliJ (HTTP Client). Rode o projeto antes (DemoApplication).
+### Clique no triângulo verde ao lado de cada "###" para enviar.
+### O usuário é identificado pelo header X-Usuario-Id (aqui usamos os usuários 1, 2 e 3).
+
+### 1) Usuário 1 cria conversa individual com o usuário 2
+POST http://localhost:8082/api/chat/conversas
+Content-Type: application/json
+X-Usuario-Id: 1
+
+{"tipo":"INDIVIDUAL","participantesIds":[2]}
+
+### 2) Usuário 1 envia mensagem na conversa 1 (troque o 1 pelo "id" retornado acima, se for outro)
+POST http://localhost:8082/api/chat/conversas/1/mensagens
+Content-Type: application/json
+X-Usuario-Id: 1
+
+{"conteudo":"Oi, tudo bem?"}
+
+### 3) Usuário 2 vê suas conversas (note "naoLidas": 1)
+GET http://localhost:8082/api/chat/conversas
+X-Usuario-Id: 2
+
+### 4) Usuário 2 lê o histórico
+GET http://localhost:8082/api/chat/conversas/1/mensagens
+X-Usuario-Id: 2
+
+### 5) Usuário 2 marca a conversa como lida
+POST http://localhost:8082/api/chat/conversas/1/leitura
+X-Usuario-Id: 2
+
+### 6) Usuário 2 responde
+POST http://localhost:8082/api/chat/conversas/1/mensagens
+Content-Type: application/json
+X-Usuario-Id: 2
+
+{"conteudo":"Tudo ótimo!"}
+
+### 7) Usuário 1 edita a primeira mensagem (id 1)
+PUT http://localhost:8082/api/chat/mensagens/1
+Content-Type: application/json
+X-Usuario-Id: 1
+
+{"conteudo":"Oi! Tudo bem?"}
+
+### 8) Usuário 1 exclui a primeira mensagem
+DELETE http://localhost:8082/api/chat/mensagens/1
+X-Usuario-Id: 1
+
+### 9) Usuário 1 cria um grupo com os usuários 2 e 3
+POST http://localhost:8082/api/chat/conversas
+Content-Type: application/json
+X-Usuario-Id: 1
+
+{"tipo":"GRUPO","titulo":"Time","participantesIds":[2,3]}
+
+### 10) Um estranho (usuário 99) tenta ler a conversa 1: deve dar 404
+GET http://localhost:8082/api/chat/conversas/1
+X-Usuario-Id: 99

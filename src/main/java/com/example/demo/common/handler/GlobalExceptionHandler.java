@@ -1,64 +1,60 @@
-
 package com.example.demo.common.handler;
 
-import com.example.demo.common.exception.RegraNegocioException;
+import com.example.demo.common.exception.NaoAutenticadoException;
 import com.example.demo.common.exception.RecursoNaoEncontradoException;
+import com.example.demo.common.exception.RegraNegocioException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.jspecify.annotations.NonNull;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import org.springframework.web.bind.MethodArgumentNotValidException;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.time.Instant;
+import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(RegraNegocioException.class)
-    public ResponseEntity<@NonNull String> tratarRegraNegocio(
-            RegraNegocioException exception
-    ) {
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(exception.getMessage());
+    public record ErroResponse(int status, String mensagem, List<String> detalhes, Instant timestamp) {
     }
 
     @ExceptionHandler(RecursoNaoEncontradoException.class)
-    public ResponseEntity<@NonNull String> tratarRecursoNaoEncontrado(
-            RecursoNaoEncontradoException exception
-    ) {
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(exception.getMessage());
+    public ResponseEntity<ErroResponse> naoEncontrado(RecursoNaoEncontradoException ex) {
+        return resposta(HttpStatus.NOT_FOUND, ex.getMessage(), List.of());
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<@NonNull String> tratarErroInterno(
-            Exception exception
-    ) {
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Ocorreu um erro interno no servidor.");
+    @ExceptionHandler(NaoAutenticadoException.class)
+    public ResponseEntity<ErroResponse> naoAutenticado(NaoAutenticadoException ex) {
+        return resposta(HttpStatus.UNAUTHORIZED, ex.getMessage(), List.of());
+    }
+
+    @ExceptionHandler(RegraNegocioException.class)
+    public ResponseEntity<ErroResponse> regraNegocio(RegraNegocioException ex) {
+        return resposta(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), List.of());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<@NonNull Map<String, String>> tratarErrosValidacao(
-            MethodArgumentNotValidException exception
-    ) {
-        Map<String, String> erros = new LinkedHashMap<>();
-
-        exception.getBindingResult().getFieldErrors().forEach(erro -> {
-            String mensagem = erro.getDefaultMessage() != null
-                    ? erro.getDefaultMessage()
-                    : "Valor inválido.";
-
-            erros.put(erro.getField(), mensagem);
-        });
-
-        return ResponseEntity.badRequest().body(erros);
+    public ResponseEntity<ErroResponse> validacao(MethodArgumentNotValidException ex) {
+        List<String> detalhes = ex.getBindingResult().getFieldErrors().stream()
+                .map(e -> e.getField() + ": " + e.getDefaultMessage())
+                .toList();
+        return resposta(HttpStatus.BAD_REQUEST, "Dados inválidos", detalhes);
     }
 
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ResponseEntity<ErroResponse> headerAusente(MissingRequestHeaderException ex) {
+        return resposta(HttpStatus.UNAUTHORIZED, "Header obrigatório ausente: " + ex.getHeaderName(), List.of());
+    }
+
+    @ExceptionHandler({HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class})
+    public ResponseEntity<ErroResponse> requisicaoInvalida(Exception ex) {
+        return resposta(HttpStatus.BAD_REQUEST, "Requisição inválida", List.of());
+    }
+
+    private ResponseEntity<ErroResponse> resposta(HttpStatus status, String mensagem, List<String> detalhes) {
+        return ResponseEntity.status(status).body(new ErroResponse(status.value(), mensagem, detalhes, Instant.now()));
+    }
 }
