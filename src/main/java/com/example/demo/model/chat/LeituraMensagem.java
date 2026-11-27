@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "chat_leituras")
+@Table(name = "message_reads")
 public class LeituraMensagem {
 
     @EmbeddedId
@@ -13,14 +13,13 @@ public class LeituraMensagem {
 
     @MapsId("mensagemId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "mensagem_id")
+    @JoinColumn(name = "message_id", nullable = false)
     private Mensagem mensagem;
 
-    @Column(name = "lida_em", nullable = false)
+    @Column(name = "read_at", nullable = false)
     private Instant lidaEm;
 
-    protected LeituraMensagem() {
-    }
+    protected LeituraMensagem() { }
 
     public LeituraMensagem(Mensagem mensagem, Long usuarioId) {
         this.mensagem = mensagem;

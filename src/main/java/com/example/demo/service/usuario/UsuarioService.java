@@ -93,6 +93,13 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = true)
+    public boolean existeAtivoPorId(Long id) {
+        return usuarioRepository.findById(id)
+                .map(usuario -> usuario.getStatus() == StatusUsuario.ACTIVE)
+                .orElse(false);
+    }
+
+    @Transactional(readOnly = true)
     public UsuarioResponseDTO buscarPorId(Long id) {
 
         Usuario usuario = usuarioRepository.findById(id)

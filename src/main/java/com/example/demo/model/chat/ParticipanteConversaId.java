@@ -9,14 +9,13 @@ import java.util.Objects;
 @Embeddable
 public class ParticipanteConversaId implements Serializable {
 
-    @Column(name = "conversa_id")
+    @Column(name = "conversation_id")
     private Long conversaId;
 
-    @Column(name = "usuario_id")
+    @Column(name = "user_id")
     private Long usuarioId;
 
-    protected ParticipanteConversaId() {
-    }
+    protected ParticipanteConversaId() { }
 
     public ParticipanteConversaId(Long conversaId, Long usuarioId) {
         this.conversaId = conversaId;
@@ -34,7 +33,5 @@ public class ParticipanteConversaId implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(conversaId, usuarioId);
-    }
+    public int hashCode() { return Objects.hash(conversaId, usuarioId); }
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -33,7 +34,7 @@ public class LeituraMensagemService {
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Mensagem não encontrada"));
         participanteService.exigirParticipanteAtivo(mensagem.getConversa().getId(), usuarioId);
 
-        if (mensagem.isExcluida() || mensagem.getRemetenteId().equals(usuarioId)) {
+        if (mensagem.isExcluida() || Objects.equals(mensagem.getRemetenteId(), usuarioId)) {
             return;
         }
         if (!leituras.existsById(new LeituraMensagemId(mensagemId, usuarioId))) {

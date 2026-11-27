@@ -20,7 +20,7 @@ public interface MensagemRepositoryInterface extends JpaRepository<Mensagem, Lon
     @Query("""
             select m from Mensagem m
             where m.conversa.id = :conversaId
-              and m.remetenteId <> :usuarioId
+              and (m.remetenteId is null or m.remetenteId <> :usuarioId)
               and m.excluidaEm is null
               and not exists (select 1 from LeituraMensagem l
                               where l.id.mensagemId = m.id and l.id.usuarioId = :usuarioId)
@@ -31,7 +31,7 @@ public interface MensagemRepositoryInterface extends JpaRepository<Mensagem, Lon
     @Query("""
             select count(m) from Mensagem m
             where m.conversa.id = :conversaId
-              and m.remetenteId <> :usuarioId
+              and (m.remetenteId is null or m.remetenteId <> :usuarioId)
               and m.excluidaEm is null
               and not exists (select 1 from LeituraMensagem l
                               where l.id.mensagemId = m.id and l.id.usuarioId = :usuarioId)

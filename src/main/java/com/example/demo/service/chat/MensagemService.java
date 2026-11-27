@@ -21,6 +21,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
+
 @Service
 @Transactional
 public class MensagemService {
@@ -49,7 +51,11 @@ public class MensagemService {
         Mensagem mensagem = new Mensagem();
         mensagem.setConversa(conversa);
         mensagem.setRemetenteId(remetenteId);
-        mensagem.setTipo(dto.tipo() == null ? TipoMensagem.TEXTO : dto.tipo());
+        TipoMensagem tipo = dto.tipo() == null ? TipoMensagem.TEXTO : dto.tipo();
+        if (tipo == TipoMensagem.SISTEMA) {
+            throw new RegraNegocioException("Mensagens de sistema não podem ser enviadas por usuários");
+        }
+        mensagem.setTipo(tipo);
         mensagem.setConteudo(dto.conteudo().strip());
         mensagens.save(mensagem);
 
@@ -64,7 +70,7 @@ public class MensagemService {
     public Page<MensagemResponseDTO> listar(Long conversaId, Long usuarioId, Pageable pageable) {
         participanteService.exigirParticipanteAtivo(conversaId, usuarioId);
         Pageable semOrdenacao = PageRequest.of(pageable.getPageNumber(),
-                Math.min(pageable.getPageSize(), TAMANHO_MAXIMO_PAGINA));
+                Math.max(1, Math.min(pageable.getPageSize(), TAMANHO_MAXIMO_PAGINA)));
         return mensagens.findByConversaIdOrderByCriadaEmDescIdDesc(conversaId, semOrdenacao)
                 .map(mapper::toResponse);
     }
@@ -73,7 +79,7 @@ public class MensagemService {
         Mensagem mensagem = buscarEntidade(mensagemId);
         participanteService.exigirParticipanteAtivo(mensagem.getConversa().getId(), usuarioId);
 
-        if (!mensagem.getRemetenteId().equals(usuarioId)) {
+        if (!Objects.equals(mensagem.getRemetenteId(), usuarioId)) {
             throw new RegraNegocioException("Apenas o autor pode editar a mensagem");
         }
         if (mensagem.isExcluida()) {
@@ -94,7 +100,7 @@ public class MensagemService {
         ParticipanteConversa participante =
                 participanteService.exigirParticipanteAtivo(mensagem.getConversa().getId(), usuarioId);
 
-        boolean autor = mensagem.getRemetenteId().equals(usuarioId);
+        boolean autor = Objects.equals(mensagem.getRemetenteId(), usuarioId);
         if (!autor && participante.getPapel() != PapelParticipante.ADMIN) {
             throw new RegraNegocioException("Sem permissão para excluir esta mensagem");
         }

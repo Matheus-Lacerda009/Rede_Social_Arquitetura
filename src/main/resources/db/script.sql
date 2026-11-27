@@ -225,6 +225,8 @@ CREATE TABLE conversation_participants (
     joined_at TIMESTAMP(6)
         NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
 
+    left_at DATETIME(6),
+
     PRIMARY KEY (conversation_id, user_id),
 
     CONSTRAINT fk_participant_conversation
@@ -252,7 +254,7 @@ CREATE TABLE messages (
 
     content TEXT,
 
-    message_type ENUM('TEXT', 'IMAGE', 'VIDEO', 'FILE', 'SYSTEM')
+    message_type ENUM('TEXT', 'IMAGE', 'VIDEO', 'AUDIO', 'FILE', 'SYSTEM')
         NOT NULL DEFAULT 'TEXT',
 
     media_url VARCHAR(2048),

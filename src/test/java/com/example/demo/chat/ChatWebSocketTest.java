@@ -3,6 +3,9 @@ package com.example.demo.chat;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
@@ -31,6 +34,16 @@ import static org.junit.jupiter.api.Assertions.*;
         "spring.jpa.hibernate.ddl-auto=create-drop"
 })
 class ChatWebSocketTest {
+
+    @TestConfiguration
+    static class ConfiguracaoTeste {
+        @Bean
+        @Primary
+        com.example.demo.service.chat.ConsultaUsuarioChat consultaUsuarioChat() {
+            return id -> true;
+        }
+    }
+
 
     @LocalServerPort
     int porta;
@@ -63,13 +76,27 @@ class ChatWebSocketTest {
         BlockingQueue<String> recebidasPelaB = new LinkedBlockingQueue<>();
         WebSocketSession b = conectar(5002, recebidasPelaB);
 
-        rest.exchange("/api/chat/conversas/" + conversaId + "/mensagens", HttpMethod.POST,
-                req(5001, Map.of("conteudo", "ao vivo")), Map.class);
+        Map<?, ?> mensagem = rest.exchange("/api/chat/conversas/" + conversaId + "/mensagens", HttpMethod.POST,
+                req(5001, Map.of("conteudo", "ao vivo")), Map.class).getBody();
+        long mensagemId = ((Number) mensagem.get("id")).longValue();
 
-        String json = recebidasPelaB.poll(5, TimeUnit.SECONDS);
-        assertNotNull(json, "O usuário B deveria ter recebido a mensagem pelo WebSocket");
-        assertTrue(json.contains("MENSAGEM_NOVA"));
-        assertTrue(json.contains("ao vivo"));
+        String jsonNova = recebidasPelaB.poll(5, TimeUnit.SECONDS);
+        assertNotNull(jsonNova, "O usuário B deveria ter recebido a mensagem pelo WebSocket");
+        assertTrue(jsonNova.contains("MENSAGEM_NOVA"));
+        assertTrue(jsonNova.contains("ao vivo"));
+
+        rest.exchange("/api/chat/mensagens/" + mensagemId, HttpMethod.PUT,
+                req(5001, Map.of("conteudo", "mensagem editada")), Map.class);
+        String jsonEditada = recebidasPelaB.poll(5, TimeUnit.SECONDS);
+        assertNotNull(jsonEditada, "O usuário B deveria receber o evento de edição");
+        assertTrue(jsonEditada.contains("MENSAGEM_EDITADA"));
+        assertTrue(jsonEditada.contains("mensagem editada"));
+
+        rest.exchange("/api/chat/mensagens/" + mensagemId, HttpMethod.DELETE,
+                req(5001, Map.of()), Map.class);
+        String jsonExcluida = recebidasPelaB.poll(5, TimeUnit.SECONDS);
+        assertNotNull(jsonExcluida, "O usuário B deveria receber o evento de exclusão");
+        assertTrue(jsonExcluida.contains("MENSAGEM_EXCLUIDA"));
         b.close();
     }
 

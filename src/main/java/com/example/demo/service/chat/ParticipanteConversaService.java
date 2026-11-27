@@ -93,12 +93,16 @@ public class ParticipanteConversaService {
                 : participantes.findById(new ParticipanteConversaId(conversaId, alvoId))
                         .filter(ParticipanteConversa::isAtivo)
                         .orElseThrow(() -> new RecursoNaoEncontradoException("Participante não encontrado"));
-        alvo.sair();
-
-        // Se o grupo ficou sem admin, promove o participante mais antigo.
         List<ParticipanteConversa> restantes = participantes.listarAtivos(conversaId).stream()
                 .filter(p -> !p.getUsuarioId().equals(alvoId))
                 .toList();
+        if (restantes.isEmpty()) {
+            throw new RegraNegocioException("O grupo precisa manter ao menos um participante ativo");
+        }
+
+        alvo.sair();
+
+        // Se o grupo ficou sem admin, promove o participante mais antigo.
         boolean semAdmin = restantes.stream().noneMatch(p -> p.getPapel() == PapelParticipante.ADMIN);
         if (!restantes.isEmpty() && semAdmin) {
             restantes.get(0).setPapel(PapelParticipante.ADMIN);

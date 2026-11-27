@@ -1,7 +1,6 @@
 package com.example.demo.common.security;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -18,7 +17,6 @@ import java.util.Optional;
  * sem conflito de beans.
  */
 @Component
-@ConditionalOnMissingBean(UsuarioIdResolver.class)
 public class HeaderUsuarioIdResolver implements UsuarioIdResolver {
 
     public static final String HEADER = "X-Usuario-Id";

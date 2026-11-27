@@ -56,6 +56,10 @@ public class ConversaService {
      * Cria uma conversa. Para INDIVIDUAL, se já existir conversa entre os dois usuários, ela é reutilizada.
      */
     public ConversaResponseDTO criar(Long criadorId, ConversaCriacaoDTO dto) {
+        if (!consultaUsuario.existe(criadorId)) {
+            throw new RegraNegocioException("Usuário " + criadorId + " não encontrado");
+        }
+
         Set<Long> outros = new LinkedHashSet<>(dto.participantesIds());
         outros.remove(criadorId);
         if (outros.isEmpty()) {
@@ -105,7 +109,7 @@ public class ConversaService {
     @Transactional(readOnly = true)
     public Page<ConversaResponseDTO> listar(Long usuarioId, Pageable pageable) {
         Pageable semOrdenacao = PageRequest.of(pageable.getPageNumber(),
-                Math.min(pageable.getPageSize(), TAMANHO_MAXIMO_PAGINA));
+                Math.max(1, Math.min(pageable.getPageSize(), TAMANHO_MAXIMO_PAGINA)));
         return conversas.listarDoUsuario(usuarioId, semOrdenacao)
                 .map(c -> montarResposta(c, usuarioId));
     }

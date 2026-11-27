@@ -1,13 +1,14 @@
 package com.example.demo.model.chat;
 
 import com.example.demo.enums.chat.TipoMensagem;
+import com.example.demo.enums.chat.TipoMensagemConverter;
 import jakarta.persistence.*;
 
 import java.time.Instant;
 
 @Entity
-@Table(name = "chat_mensagens",
-        indexes = @Index(name = "idx_chat_mensagens_conversa_data", columnList = "conversa_id, criada_em"))
+@Table(name = "messages",
+        indexes = @Index(name = "idx_message_conversation", columnList = "conversation_id, created_at"))
 public class Mensagem {
 
     @Id
@@ -15,27 +16,27 @@ public class Mensagem {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "conversa_id", nullable = false)
+    @JoinColumn(name = "conversation_id", nullable = false)
     private Conversa conversa;
 
-    @Column(name = "remetente_id", nullable = false)
+    /** Pode ficar nulo quando a conta do remetente é excluída (ON DELETE SET NULL). */
+    @Column(name = "sender_id")
     private Long remetenteId;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Convert(converter = TipoMensagemConverter.class)
+    @Column(name = "message_type", nullable = false, length = 20)
     private TipoMensagem tipo;
 
-    @Column(nullable = false, length = 4000)
+    @Column(name = "content", columnDefinition = "TEXT")
     private String conteudo;
 
-    @Column(name = "criada_em", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private Instant criadaEm;
 
-    @Column(name = "editada_em")
+    @Column(name = "edited_at")
     private Instant editadaEm;
 
-    /** Exclusão lógica: null = mensagem visível. */
-    @Column(name = "excluida_em")
+    @Column(name = "deleted_at")
     private Instant excluidaEm;
 
     @PrePersist
@@ -44,12 +45,7 @@ public class Mensagem {
     }
 
     public boolean isExcluida() { return excluidaEm != null; }
-
-    public void editar(String novoConteudo) {
-        this.conteudo = novoConteudo;
-        this.editadaEm = Instant.now();
-    }
-
+    public void editar(String novoConteudo) { this.conteudo = novoConteudo; this.editadaEm = Instant.now(); }
     public void excluir() { this.excluidaEm = Instant.now(); }
 
     public Long getId() { return id; }

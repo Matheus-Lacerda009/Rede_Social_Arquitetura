@@ -28,8 +28,10 @@ public interface ConversaRepositoryInterface extends JpaRepository<Conversa, Lon
     @Query("""
             select c from Conversa c
             where c.tipo = com.example.demo.enums.chat.TipoConversa.INDIVIDUAL
-              and exists (select 1 from ParticipanteConversa p1 where p1.conversa = c and p1.id.usuarioId = :a)
-              and exists (select 1 from ParticipanteConversa p2 where p2.conversa = c and p2.id.usuarioId = :b)
+              and exists (select 1 from ParticipanteConversa p1
+                          where p1.conversa = c and p1.id.usuarioId = :a and p1.saiuEm is null)
+              and exists (select 1 from ParticipanteConversa p2
+                          where p2.conversa = c and p2.id.usuarioId = :b and p2.saiuEm is null)
             order by c.id
             """)
     List<Conversa> buscarIndividualEntre(@Param("a") Long a, @Param("b") Long b);

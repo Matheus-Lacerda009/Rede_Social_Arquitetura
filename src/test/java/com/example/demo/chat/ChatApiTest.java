@@ -3,8 +3,11 @@ package com.example.demo.chat;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -22,6 +25,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "spring.jpa.hibernate.ddl-auto=create-drop"
 })
 class ChatApiTest {
+
+    @TestConfiguration
+    static class ConfiguracaoTeste {
+        @Bean
+        @Primary
+        com.example.demo.service.chat.ConsultaUsuarioChat consultaUsuarioChat() {
+            return id -> true;
+        }
+    }
+
 
     @Autowired
     MockMvc mvc;
@@ -82,7 +95,7 @@ class ChatApiTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(2))
                 .andExpect(jsonPath("$.content[1].excluida").value(true))
-                .andExpect(jsonPath("$.content[1].conteudo").doesNotExist());
+                .andExpect(jsonPath("$.content[1].conteudo").value(org.hamcrest.Matchers.nullValue()));
 
         // listagem de conversas do usuário
         chamar(get("/api/chat/conversas"), 101L, null)
@@ -133,6 +146,32 @@ class ChatApiTest {
         long m = id(chamar(post("/api/chat/conversas/" + g + "/mensagens"), 303L, "{\"conteudo\":\"spam\"}"));
         chamar(delete("/api/chat/mensagens/" + m), 301L, null).andExpect(status().isUnprocessableEntity()); // 301 voltou como MEMBRO
         chamar(delete("/api/chat/mensagens/" + m), 302L, null).andExpect(status().isNoContent());
+    }
+
+    @Test
+    void grupoNaoPodeFicarSemParticipantesAtivos() throws Exception {
+        long grupoId = id(chamar(post("/api/chat/conversas"), 601L,
+                "{\"tipo\":\"GRUPO\",\"titulo\":\"Grupo com dois\",\"participantesIds\":[602]}"));
+        String base = "/api/chat/conversas/" + grupoId + "/participantes";
+
+        // O criador sai e o único outro participante é promovido a ADMIN.
+        chamar(delete(base + "/601"), 601L, null).andExpect(status().isNoContent());
+        chamar(get(base), 602L, null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].papel").value("ADMIN"));
+
+        // O último participante não pode deixar o grupo sem ninguém que consiga administrá-lo.
+        chamar(delete(base + "/602"), 602L, null).andExpect(status().isUnprocessableEntity());
+        chamar(get("/api/chat/conversas/" + grupoId), 602L, null).andExpect(status().isOk());
+    }
+
+    @Test
+    void usuarioDeSistemaNaoPodeSerEnviadoPeloCliente() throws Exception {
+        long conversaId = id(chamar(post("/api/chat/conversas"), 701L,
+                "{\"tipo\":\"INDIVIDUAL\",\"participantesIds\":[702]}"));
+        chamar(post("/api/chat/conversas/" + conversaId + "/mensagens"), 701L,
+                "{\"tipo\":\"SISTEMA\",\"conteudo\":\"mensagem interna\"}")
+                .andExpect(status().isUnprocessableEntity());
     }
 
     @Test

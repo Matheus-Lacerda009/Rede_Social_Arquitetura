@@ -1,36 +1,33 @@
 package com.example.demo.model.chat;
 
 import com.example.demo.enums.chat.TipoConversa;
+import com.example.demo.enums.chat.TipoConversaConverter;
 import jakarta.persistence.*;
 
 import java.time.Instant;
 
-/**
- * Conversa individual (2 participantes) ou em grupo.
- * Usuários são referenciados apenas por id (sem FK/JPA para o módulo de usuários).
- */
 @Entity
-@Table(name = "chat_conversas")
+@Table(name = "conversations")
 public class Conversa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Convert(converter = TipoConversaConverter.class)
+    @Column(name = "type", nullable = false, length = 20)
     private TipoConversa tipo;
 
-    @Column(length = 150)
+    @Column(name = "title", length = 100)
     private String titulo;
 
-    @Column(name = "criado_por", nullable = false)
+    @Column(name = "created_by", nullable = false)
     private Long criadoPor;
 
-    @Column(name = "criado_em", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private Instant criadoEm;
 
-    @Column(name = "ultima_atividade_em", nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private Instant ultimaAtividadeEm;
 
     @PrePersist
@@ -38,6 +35,11 @@ public class Conversa {
         Instant agora = Instant.now();
         if (criadoEm == null) criadoEm = agora;
         if (ultimaAtividadeEm == null) ultimaAtividadeEm = agora;
+    }
+
+    @PreUpdate
+    void aoAtualizar() {
+        ultimaAtividadeEm = Instant.now();
     }
 
     public Long getId() { return id; }

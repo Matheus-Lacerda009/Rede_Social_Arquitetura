@@ -2,10 +2,11 @@ package com.example.demo.chat;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,6 +29,7 @@ class ChatConsultaUsuarioTest {
     @TestConfiguration
     static class Config {
         @Bean
+        @Primary
         ConsultaUsuarioChat consultaUsuarioChat() {
             return id -> id < 9000;   // ids a partir de 9000 "não existem"
         }
@@ -48,5 +50,11 @@ class ChatConsultaUsuarioTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"tipo\":\"INDIVIDUAL\",\"participantesIds\":[2]}"))
                 .andExpect(status().isCreated());
+
+        mvc.perform(post("/api/chat/conversas").header("X-Usuario-Id", 9500)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tipo\":\"INDIVIDUAL\",\"participantesIds\":[2]}"))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.mensagem").value("Usuário 9500 não encontrado"));
     }
 }
